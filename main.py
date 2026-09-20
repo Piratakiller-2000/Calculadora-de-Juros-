@@ -90,9 +90,8 @@ if __name__ == '__main__':
         resizable=False
     )
     
-    # Tenta utilizar o backend nativo do Windows sem passar pela ponte pythonnet
+    # Força o uso do backend Qt (elimina totalmente a necessidade do pythonnet/.NET)
     try:
-        webview.start(gui='cef', icon=icon_path if os.path.exists(icon_path) else None)
+        webview.start(gui='qt', icon=icon_path if os.path.exists(icon_path) else None)
     except Exception:
-        # Fallback para o motor padrao caso o CEF nao esteja instalado
         webview.start(icon=icon_path if os.path.exists(icon_path) else None)
