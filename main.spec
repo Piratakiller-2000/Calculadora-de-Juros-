@@ -1,8 +1,4 @@
 # -*- mode: python ; coding: utf-8 -*-
-import os
-import pythonnet
-
-pythonnet_dir = os.path.dirname(pythonnet.__file__)
 
 a = Analysis(
     ['main.py'],
@@ -10,50 +6,12 @@ a = Analysis(
     binaries=[],
     datas=[
         ('web', 'web'),
-        ('icon.ico', '.'),
-        (pythonnet_dir, 'pythonnet')
+        ('icon.ico', '.')
     ],
-    hiddenimports=[
-        'clr_loader', 
-        'pythonnet', 
-        'clr', 
-        'webview',
-        'clr_loader.types',
-        'clr_loader.netfx'
-    ],
-    hookspath=[],
-    hooksconfig={},
-    runtime_hooks=[],
-    excludes=[],
+    hiddenimports=['PyQt6.QtWebEngineWidgets'],
+    excludes=['pythonnet', 'clr', 'clr_loader'],
     noarchive=False,
-    optimize=0,
 )
 pyz = PYZ(a.pure)
-
-exe = EXE(
-    pyz,
-    a.scripts,
-    [],
-    exclude_binaries=True,
-    name='main',
-    debug=False,
-    bootloader_ignore_signals=False,
-    strip=False,
-    upx=True,
-    console=False,
-    disable_windowed_traceback=False,
-    argv_emulation=False,
-    target_arch=None,
-    codesign_identity=None,
-    entitlements_file=None,
-    icon=['icon.ico'],
-)
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.datas,
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    name='main',
-)
+exe = EXE(pyz, a.scripts, exclude_binaries=True, name='main', console=False, icon=['icon.ico'])
+coll = COLLECT(exe, a.binaries, a.datas, name='main')
