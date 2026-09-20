@@ -1,6 +1,7 @@
 import os
 import sys
 import webview
+from pathlib import Path
 
 def get_resource_path(relative_path):
     """ Retorna o caminho absoluto do recurso, compatível com PyInstaller e dev. """
@@ -78,20 +79,20 @@ class FinancialAPI:
 
 if __name__ == '__main__':
     api = FinancialAPI()
-    html_file = get_resource_path(os.path.join("web", "index.html"))
+    
+    # Resolve o caminho do HTML e converte para uma URL no formato file:/// válido e sem %5C
+    html_file_path = Path(get_resource_path(os.path.join("web", "index.html"))).resolve()
+    html_url = html_file_path.as_uri()
+    
     icon_path = get_resource_path("icon.ico")
 
     window = webview.create_window(
         title="Calculadora de Juros Compostos",
-        url=f"file:///{html_file}",
+        url=html_url,
         js_api=api,
         width=420,
         height=680,
         resizable=False
     )
     
-    # Força o uso do backend Qt (elimina totalmente a necessidade do pythonnet/.NET)
-    try:
-        webview.start(gui='qt', icon=icon_path if os.path.exists(icon_path) else None)
-    except Exception:
-        webview.start(icon=icon_path if os.path.exists(icon_path) else None)
+    webview.start(icon=icon_path if os.path.exists(icon_path) else None)
