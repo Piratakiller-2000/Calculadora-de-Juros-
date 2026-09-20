@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Juros Compostos</title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="calculator-container">
+        <!-- Navegação por Abas -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('calc-tab')">Calculadora</button>
+            <button class="tab-btn" onclick="switchTab('table-tab')">Tabela Evolutiva</button>
+        </nav>
+
+        <!-- Mensagem de Alerta -->
+        <div id="alert-box" class="alert-box hidden"></div>
+
+        <!-- ABA 1: CALCULADORA -->
+        <div id="calc-tab" class="tab-content active">
+            <main class="inputs-section">
+                <!-- Seletor de Moeda -->
+                <div class="input-group">
+                    <label for="currency-select">Moeda / Currency</label>
+                    <select id="currency-select" class="currency-dropdown" onchange="updateCurrencySymbol()">
+                        <option value="BRL" data-symbol="R$" data-locale="pt-BR">Real (R$) - BRL</option>
+                        <option value="USD" data-symbol="$" data-locale="en-US">Dólar ($) - USD</option>
+                        <option value="EUR" data-symbol="€" data-locale="de-DE">Euro (€) - EUR</option>
+                        <option value="GBP" data-symbol="£" data-locale="en-GB">Libra (£) - GBP</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="initial-amount">Valor Inicial (<span class="currency-symbol">R$</span>)</label>
+                    <input type="text" id="initial-amount" class="calc-input active" readonly placeholder="0" value="0">
+                </div>
+
+                <div class="input-group">
+                    <label for="monthly-deposit">Aporte Mensal (<span class="currency-symbol">R$</span>)</label>
+                    <input type="text" id="monthly-deposit" class="calc-input" readonly placeholder="0" value="0">
+                </div>
+
+                <div class="input-group row-group">
+                    <div class="flex-grow">
+                        <label for="period">Tempo / Período</label>
+                        <input type="text" id="period" class="calc-input" readonly placeholder="0" value="1">
+                    </div>
+                    <div class="unit-selector">
+                        <label for="period-unit">Unidade</label>
+                        <select id="period-unit">
+                            <option value="month">Mês(es)</option>
+                            <option value="year">Ano(s)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="interest-rate">Taxa de Juros (% ao mês)</label>
+                    <input type="text" id="interest-rate" class="calc-input" readonly placeholder="0" value="0">
+                </div>
+            </main>
+
+            <section class="result-section">
+                <div class="result-row">
+                    <span>Total Investido:</span>
+                    <strong id="res-invested">R$ 0,00</strong>
+                </div>
+                <div class="result-row">
+                    <span>Total em Juros:</span>
+                    <strong id="res-interest">R$ 0,00</strong>
+                </div>
+                <div class="result-row total">
+                    <span>Valor Final Acumulado:</span>
+                    <strong id="res-total">R$ 0,00</strong>
+                </div>
+            </section>
+
+            <!-- Teclado com Disposição de Botões Restaurada -->
+            <section class="keypad">
+                <button class="btn btn-num" onclick="appendChar('7')">7</button>
+                <button class="btn btn-num" onclick="appendChar('8')">8</button>
+                <button class="btn btn-num" onclick="appendChar('9')">9</button>
+
+                <button class="btn btn-num" onclick="appendChar('4')">4</button>
+                <button class="btn btn-num" onclick="appendChar('5')">5</button>
+                <button class="btn btn-num" onclick="appendChar('6')">6</button>
+
+                <button class="btn btn-num" onclick="appendChar('1')">1</button>
+                <button class="btn btn-num" onclick="appendChar('2')">2</button>
+                <button class="btn btn-num" onclick="appendChar('3')">3</button>
+
+                <!-- Ponto/Vírgula ao lado do 0 e Ponto extra -->
+                <button id="comma-btn" class="btn btn-num" onclick="appendChar(',')">,</button>
+                <button class="btn btn-num" onclick="appendChar('0')">0</button>
+                <button id="dot-btn" class="btn btn-num" onclick="appendChar('.')">.</button>
+
+                <!-- Linha de Ações: Calcular, Limpar e Apagar -->
+                <button class="btn btn-action btn-calculate" onclick="calculate()">Calcular</button>
+                <button class="btn btn-action btn-clear" onclick="clearActiveField()">Limpar</button>
+                <button class="btn btn-action btn-backspace" onclick="deleteChar()">Apagar</button>
+            </section>
+        </div>
+
+        <!-- ABA 2: TABELA EVOLUTIVA -->
+        <div id="table-tab" class="tab-content">
+            <div class="table-header-control">
+                <label for="view-mode">Visualizar por:</label>
+                <select id="view-mode" onchange="changeTableMode()">
+                    <option value="monthly">Mês a Mês</option>
+                    <option value="annual">Ano a Ano</option>
+                </select>
+            </div>
+
+            <section class="table-container">
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th id="period-header">Mês</th>
+                            <th>Rendimento</th>
+                            <th>Investido</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <tr>
+                            <td colspan="4" class="empty-msg">Realize o cálculo para visualizar a evolução.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
