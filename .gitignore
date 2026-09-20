@@ -1,7 +1,6 @@
 # Arquivos de compilação
 build/
 dist/
-*.spec
 
 # Cache do Python
 __pycache__/

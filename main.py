@@ -1,7 +1,11 @@
 import os
 import sys
-import webview
 from pathlib import Path
+
+# FORÇAR O PYWEBVIEW A USAR EDGECHROMIUM VIA CEF/WEBVIEW2 SEM PASSAR PELO WINFORMS
+os.environ['PYWEBVIEW_GUI'] = 'edgechromium'
+
+import webview
 
 def get_resource_path(relative_path):
     """ Retorna o caminho absoluto do recurso, compatível com PyInstaller e dev. """
@@ -16,10 +20,8 @@ class FinancialAPI:
             deposit = float(monthly_deposit)
             raw_rate = float(interest_rate) / 100.0
             
-            # Se a unidade for em anos, converte o período para meses e a taxa anual para mensal equivalente
             if is_annual_period:
                 months = int(period * 12)
-                # Converter taxa anual para taxa mensal equivalente
                 monthly_rate = ((1 + raw_rate) ** (1 / 12)) - 1
             else:
                 months = int(period)
@@ -34,15 +36,12 @@ class FinancialAPI:
 
             monthly_schedule = []
             annual_schedule = []
-            
             accumulated_annual_interest = 0.0
 
             for month in range(1, months + 1):
-                # 1. Adiciona o aporte mensal ao montante investido
                 accumulated += deposit
                 total_invested += deposit
 
-                # 2. Calcula os juros do mês sobre o total acumulado
                 interest_month = accumulated * monthly_rate
                 accumulated += interest_month
                 
@@ -94,5 +93,4 @@ if __name__ == '__main__':
         resizable=False
     )
     
-    # Força o EdgeChromium puro e evita o pythonnet/winforms
-    webview.start(gui='edgechromium', icon=icon_path if os.path.exists(icon_path) else None)
+    webview.start(icon=icon_path if os.path.exists(icon_path) else None)
