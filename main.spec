@@ -8,10 +8,22 @@ a = Analysis(
         ('web', 'web'),
         ('icon.ico', '.')
     ],
-    hiddenimports=['PyQt6.QtWebEngineWidgets'],
-    excludes=['pythonnet', 'clr', 'clr_loader'],
+    hiddenimports=['webview'],
+    excludes=['PyQt6'], # O pythonnet já não está excluído aqui
     noarchive=False,
 )
 pyz = PYZ(a.pure)
-exe = EXE(pyz, a.scripts, exclude_binaries=True, name='main', console=False, icon=['icon.ico'])
-coll = COLLECT(exe, a.binaries, a.datas, name='main')
+exe = EXE(
+    pyz, 
+    a.scripts, 
+    exclude_binaries=True, 
+    name='CalculadoraDeJuros', 
+    console=False, 
+    icon=['icon.ico']
+)
+coll = COLLECT(
+    exe, 
+    a.binaries, 
+    a.datas, 
+    name='CalculadoraDeJuros'
+)

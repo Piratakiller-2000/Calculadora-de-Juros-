@@ -56,9 +56,31 @@
                     </div>
                 </div>
 
+                <!-- NOVO: Seletor de Tipo de Taxa -->
                 <div class="input-group">
+                    <label for="rate-type">Tipo de Rentabilidade</label>
+                    <select id="rate-type" class="currency-dropdown" onchange="toggleRateInputs()">
+                        <option value="fixed">Taxa Fixa (% ao mês)</option>
+                        <option value="cdi">CDI (% do CDI)</option>
+                    </select>
+                </div>
+
+                <!-- NOVO: Campo de Taxa Fixa -->
+                <div id="fixed-rate-group" class="input-group">
                     <label for="interest-rate">Taxa de Juros (% ao mês)</label>
                     <input type="text" id="interest-rate" class="calc-input" readonly placeholder="0" value="0">
+                </div>
+
+                <!-- NOVO: Campos de CDI (Ocultos por predefinição) -->
+                <div id="cdi-rate-group" class="input-group row-group hidden">
+                    <div class="flex-grow">
+                        <label for="cdi-annual">CDI Atual (% a.a.)</label>
+                        <input type="text" id="cdi-annual" class="calc-input" readonly placeholder="0" value="0">
+                    </div>
+                    <div class="flex-grow">
+                        <label for="cdi-percentage">Rendimento (% CDI)</label>
+                        <input type="text" id="cdi-percentage" class="calc-input" readonly placeholder="0" value="0">
+                    </div>
                 </div>
             </main>
 
@@ -77,7 +99,7 @@
                 </div>
             </section>
 
-            <!-- Teclado com Disposição de Botões Restaurada -->
+            <!-- Teclado Numérico -->
             <section class="keypad">
                 <button class="btn btn-num" onclick="appendChar('7')">7</button>
                 <button class="btn btn-num" onclick="appendChar('8')">8</button>
@@ -91,12 +113,10 @@
                 <button class="btn btn-num" onclick="appendChar('2')">2</button>
                 <button class="btn btn-num" onclick="appendChar('3')">3</button>
 
-                <!-- Ponto/Vírgula ao lado do 0 e Ponto extra -->
                 <button id="comma-btn" class="btn btn-num" onclick="appendChar(',')">,</button>
                 <button class="btn btn-num" onclick="appendChar('0')">0</button>
                 <button id="dot-btn" class="btn btn-num" onclick="appendChar('.')">.</button>
 
-                <!-- Linha de Ações: Calcular, Limpar e Apagar -->
                 <button class="btn btn-action btn-calculate" onclick="calculate()">Calcular</button>
                 <button class="btn btn-action btn-clear" onclick="clearActiveField()">Limpar</button>
                 <button class="btn btn-action btn-backspace" onclick="deleteChar()">Apagar</button>

@@ -22,23 +22,38 @@ function updateCurrencySymbol() {
         span.textContent = config.symbol;
     });
 
-    // Re-formata os campos de entrada para a nova moeda selecionada
+    // --- NOVA LÓGICA DE LIMPEZA AO TROCAR MOEDA ---
+    
+    // 1. Zera a variável de resultados anteriores
+    lastCalculationResult = null;
+
+    // 2. Zera todos os campos de entrada, exceto o Período que volta para 1
+    const inputs = document.querySelectorAll('.calc-input');
     inputs.forEach(input => {
-        if (input.value && input.value !== '0' && input.id !== 'period') {
-            formatInputField(input);
+        if (input.id === 'period') {
+            input.value = '1';
+        } else {
+            input.value = '0';
         }
     });
 
-    if (lastCalculationResult) {
-        document.getElementById('res-invested').textContent = formatCurrency(lastCalculationResult.total_invested);
-        document.getElementById('res-interest').textContent = formatCurrency(lastCalculationResult.total_interest);
-        document.getElementById('res-total').textContent = formatCurrency(lastCalculationResult.final_amount);
-        changeTableMode();
-    } else {
-        document.getElementById('res-invested').textContent = formatCurrency(0);
-        document.getElementById('res-interest').textContent = formatCurrency(0);
-        document.getElementById('res-total').textContent = formatCurrency(0);
+    // 3. Zera os painéis de resultado usando o formato da nova moeda
+    document.getElementById('res-invested').textContent = formatCurrency(0);
+    document.getElementById('res-interest').textContent = formatCurrency(0);
+    document.getElementById('res-total').textContent = formatCurrency(0);
+
+    // 4. Limpa a Tabela Evolutiva, voltando para a mensagem padrão
+    const tableBody = document.getElementById('table-body');
+    if (tableBody) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="4" class="empty-msg">Realize o cálculo para visualizar a evolução.</td>
+            </tr>
+        `;
     }
+
+    // 5. Esconde qualquer alerta de erro que estivesse na tela
+    hideAlert();
 }
 
 function switchTab(tabId) {
@@ -66,6 +81,25 @@ function setActiveInput(targetInput) {
     inputs.forEach(i => i.classList.remove('active'));
     targetInput.classList.add('active');
     activeInput = targetInput;
+}
+
+/**
+ * Alterna a visualização entre os campos de Taxa Fixa e CDI
+ */
+function toggleRateInputs() {
+    const type = document.getElementById('rate-type').value;
+    const fixedGroup = document.getElementById('fixed-rate-group');
+    const cdiGroup = document.getElementById('cdi-rate-group');
+
+    if (type === 'cdi') {
+        fixedGroup.classList.add('hidden');
+        cdiGroup.classList.remove('hidden');
+        setActiveInput(document.getElementById('cdi-percentage'));
+    } else {
+        cdiGroup.classList.add('hidden');
+        fixedGroup.classList.remove('hidden');
+        setActiveInput(document.getElementById('interest-rate'));
+    }
 }
 
 /**
@@ -223,21 +257,30 @@ async function calculate() {
     const initialAmount = parseInputValue(document.getElementById('initial-amount').value);
     const monthlyDeposit = parseInputValue(document.getElementById('monthly-deposit').value);
     const period = parseInputValue(document.getElementById('period').value);
-    const interestRate = parseInputValue(document.getElementById('interest-rate').value);
     const isAnnualPeriod = document.getElementById('period-unit').value === 'year';
+    
+    // Captura os novos campos de rentabilidade
+    const rateType = document.getElementById('rate-type').value;
+    const interestRate = parseInputValue(document.getElementById('interest-rate').value);
+    const cdiAnnual = parseInputValue(document.getElementById('cdi-annual').value);
+    const cdiPercentage = parseInputValue(document.getElementById('cdi-percentage').value);
 
-    if (isNaN(initialAmount) || isNaN(monthlyDeposit) || isNaN(period) || isNaN(interestRate)) {
+    if (isNaN(initialAmount) || isNaN(monthlyDeposit) || isNaN(period)) {
         showAlert("Preencha todos os campos com números válidos.");
         return;
     }
 
     try {
+        // Envia os parâmetros na ordem correta exigida pelo novo main.py
         const result = await pywebview.api.calculate_compound_interest(
             initialAmount,
             monthlyDeposit,
-            interestRate,
             period,
-            isAnnualPeriod
+            isAnnualPeriod,
+            rateType,
+            interestRate,
+            cdiAnnual,
+            cdiPercentage
         );
 
         if (!result.success) {
@@ -265,8 +308,10 @@ async function calculate() {
     }
 }
 
+// Inicializa as configurações ao carregar a página
 document.addEventListener('DOMContentLoaded', () => {
     updateCurrencySymbol();
+    toggleRateInputs(); // Garante que apenas os campos corretos apareçam no arranque
 });
 
 // Suporte ao teclado físico com formatação automática
