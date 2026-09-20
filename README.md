@@ -25,4 +25,4 @@ git clone [https://github.com/SEU_USUARIO/calculadora-juros-compostos.git](https
 pip install pywebview pillow
 
 # Execute o projeto
-python main.py
+python Calculafora de Juros
