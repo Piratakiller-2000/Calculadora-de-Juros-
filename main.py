@@ -80,7 +80,6 @@ class FinancialAPI:
 if __name__ == '__main__':
     api = FinancialAPI()
     
-    # Resolve o caminho do HTML e converte para uma URL no formato file:/// válido e sem %5C
     html_file_path = Path(get_resource_path(os.path.join("web", "index.html"))).resolve()
     html_url = html_file_path.as_uri()
     
@@ -95,4 +94,5 @@ if __name__ == '__main__':
         resizable=False
     )
     
-    webview.start(icon=icon_path if os.path.exists(icon_path) else None)
+    # Força o EdgeChromium puro e evita o pythonnet/winforms
+    webview.start(gui='edgechromium', icon=icon_path if os.path.exists(icon_path) else None)
